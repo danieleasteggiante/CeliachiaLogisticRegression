@@ -21,10 +21,12 @@ with col1:
     genere = st.selectbox("Genere", ["F", "M"])
 
 with col2:
-    familiaritaceliachia = st.selectbox("Familiarità Celiachia", [0, 1,2])
+    #familiaritaceliachia = st.selectbox("Familiarità Celiachia", [0, 1,2])
     dq2 = st.selectbox("DQ2", [0, 1, 2])
     dq5 = st.selectbox("DQ5", [0, 1, 2])
     dq8 = st.selectbox("DQ8", [0, 1])
+
+
 
 if st.button("Predici"):
     record = pd.DataFrame([{
@@ -32,7 +34,7 @@ if st.button("Predici"):
         'Pato Tiroide': patotiroide,
         'Deficit \nAccrescimento': deficitaccrescimento,
         'Sintomi GI': sintomigi,
-        'Familiarità\nCeliachia': familiaritaceliachia,
+        'Familiarità\nCeliachia': 0,
         'DQ2': dq2,
         'DQX.5': dq5,
         'DQ8': dq8,
@@ -40,7 +42,7 @@ if st.button("Predici"):
         'Genere_M': 1 if genere == "M" else 0
     }])
     pred = model.predict_proba(record)
-    st.header(f"Predizione: {pred[0][1]*.7:.2f} probabilità di Celiachia")
+    st.header(f"Predizione: {pred[0][1]:.2f} probabilità di Celiachia")
     with col3:
         fig = px.bar(x=["Celiachia", "Non Celiachia"], y=[pred[0][1], pred[0][0]],
                      labels={'x': 'Classe', 'y': 'Probabilità'})
