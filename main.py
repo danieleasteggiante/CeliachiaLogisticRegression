@@ -21,7 +21,7 @@ with col1:
     genere = st.selectbox("Genere", ["F", "M"])
 
 with col2:
-    #familiaritaceliachia = st.selectbox("Familiarità Celiachia", [0, 1,2])
+    familiaritaceliachia = st.selectbox("Familiarità Celiachia", [0, 1,2])
     dq2 = st.selectbox("DQ2", [0, 1, 2])
     dq5 = st.selectbox("DQ5", [0, 1, 2])
     dq8 = st.selectbox("DQ8", [0, 1])
@@ -42,6 +42,7 @@ if st.button("Predici"):
         'Genere_M': 1 if genere == "M" else 0
     }])
     pred = model.predict_proba(record)
+    prediction_adjusted = adjust_prediction(record, pred[0][1])
     st.header(f"Predizione: {pred[0][1]:.2f} probabilità di Celiachia")
     with col3:
         fig = px.bar(x=["Celiachia", "Non Celiachia"], y=[pred[0][1], pred[0][0]],
