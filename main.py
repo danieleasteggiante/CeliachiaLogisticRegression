@@ -59,8 +59,8 @@ if st.button("Predici"):
         'Genere_M': 1 if genere == "M" else 0
     }])
     pred = model.predict_proba(record)
-    prediction_adjusted = adjust_prediction(record, pred[0][1])
-    st.header(f"Predizione: {prediction_adjusted * 100}% probabilità di Celiachia")
+    prediction_adjusted = pred[0][1]#adjust_prediction(record, pred[0][1])
+    st.header(f"Predizione: {prediction_adjusted:.3f} probabilità di Celiachia")
     with col3:
         fig = px.bar(x=["Celiachia", "Non Celiachia"], y=[pred[0][1], pred[0][0]],
                      labels={'x': 'Classe', 'y': 'Probabilità'})
