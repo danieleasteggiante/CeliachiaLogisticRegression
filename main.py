@@ -22,6 +22,7 @@ with col1:
 
 with col2:
     familiaritaceliachia = st.selectbox("Familiarità Celiachia", [0, 1,2])
+    familiaritaceliachia = 2 if familiaritaceliachia > 0 else 0
     dq2 = st.selectbox("DQ2", [0, 1, 2])
     dq5 = st.selectbox("DQ5", [0, 1, 2])
     dq8 = st.selectbox("DQ8", [0, 1])
@@ -34,7 +35,7 @@ if st.button("Predici"):
         'Pato Tiroide': patotiroide,
         'Deficit \nAccrescimento': deficitaccrescimento,
         'Sintomi GI': sintomigi,
-        'Familiarità\nCeliachia': 0,
+        'Familiarità\nCeliachia': familiaritaceliachia,
         'DQ2': dq2,
         'DQX.5': dq5,
         'DQ8': dq8,
