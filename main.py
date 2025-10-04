@@ -63,7 +63,8 @@ if st.button("Predici"):
     }])
     pred = model.predict_proba(record)
     prediction_adjusted = adjust_prediction(record, pred[0][1])
-    st.header(f"Predizione: {int(prediction_adjusted * 100)}% probabilità di Celiachia")
+    label = "basso rischio" if prediction_adjusted < 0.4 else "alto rischio"
+    st.header(f"Predizione: {label} di Celiachia")
     with col3:
         fig = px.bar(x=["Celiachia", "Non Celiachia"], y=[pred[0][1], pred[0][0]],
                      labels={'x': 'Classe', 'y': 'Probabilità'})
