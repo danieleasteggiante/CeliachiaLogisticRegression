@@ -63,7 +63,7 @@ if st.button("Predici"):
     }])
     pred = model.predict_proba(record)
     prediction_adjusted = adjust_prediction(record, pred[0][1])
-    label = "Basso rischio" if prediction_adjusted < 0.4 else "Alto rischio"
+    label = "Basso rischio" if prediction_adjusted < 0.3 else "Alto rischio"
     st.header(f"Predizione: {label} di Celiachia")
     with col3:
         fig = px.bar(x=["Celiachia", "Non Celiachia"], y=[pred[0][1], pred[0][0]],
