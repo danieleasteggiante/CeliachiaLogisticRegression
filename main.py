@@ -22,7 +22,7 @@ with col1:
 
 with col2:
     familiaritaceliachia = st.selectbox("Familiarità Celiachia", [0, 1,2])
-    familiaritaceliachia = 2 if familiaritaceliachia > 0 else 0
+    familiaritaceliachia = 0
     dq2 = st.selectbox("DQ2", [0, 1, 2])
     dq5 = st.selectbox("DQ5", [0, 1, 2])
     dq8 = st.selectbox("DQ8", [0, 1])
@@ -38,10 +38,13 @@ def is_all_zeros(record):
     'DQ8',]
     return all(record[col].iloc[0] == 0 for col in columns_to_be_zero)
 
+def familiarita_is_present(rec):
+    return rec['Familiarità\nCeliachia'].iloc[0] > 0
+
 
 def adjust_prediction(rec, pred):
     if is_all_zeros(rec):
-        return 0.001
+        return 0.01
     return pred
 
 
@@ -59,8 +62,8 @@ if st.button("Predici"):
         'Genere_M': 1 if genere == "M" else 0
     }])
     pred = model.predict_proba(record)
-    prediction_adjusted = pred[0][1]#adjust_prediction(record, pred[0][1])
-    st.header(f"Predizione: {prediction_adjusted:.3f} probabilità di Celiachia")
+    prediction_adjusted = adjust_prediction(record, pred[0][1])
+    st.header(f"Predizione: {int(prediction_adjusted * 100)}% probabilità di Celiachia")
     with col3:
         fig = px.bar(x=["Celiachia", "Non Celiachia"], y=[pred[0][1], pred[0][0]],
                      labels={'x': 'Classe', 'y': 'Probabilità'})
