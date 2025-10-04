@@ -27,6 +27,24 @@ with col2:
     dq5 = st.selectbox("DQ5", [0, 1, 2])
     dq8 = st.selectbox("DQ8", [0, 1])
 
+def is_all_zeros(record):
+    columns_to_be_zero = ['TD1',
+    'Pato Tiroide',
+    'Deficit \nAccrescimento',
+    'Sintomi GI',
+    'Familiarità\nCeliachia',
+    'DQ2',
+    'DQX.5',
+    'DQ8',]
+    return all(record[col].iloc[0] == 0 for col in columns_to_be_zero)
+
+
+def adjust_prediction(rec, pred):
+    if is_all_zeros(rec):
+        return 0.001
+    return pred
+
+
 if st.button("Predici"):
     record = pd.DataFrame([{
         'TD1': td1,
@@ -41,7 +59,8 @@ if st.button("Predici"):
         'Genere_M': 1 if genere == "M" else 0
     }])
     pred = model.predict_proba(record)
-    st.header(f"Predizione: {pred[0][1]:.2f} probabilità di Celiachia")
+    prediction_adjusted = adjust_prediction(record, pred[0][1])
+    st.header(f"Predizione: {prediction_adjusted:.2f} probabilità di Celiachia")
     with col3:
         fig = px.bar(x=["Celiachia", "Non Celiachia"], y=[pred[0][1], pred[0][0]],
                      labels={'x': 'Classe', 'y': 'Probabilità'})
