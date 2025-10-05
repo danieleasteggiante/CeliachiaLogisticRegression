@@ -15,18 +15,20 @@ col1, col2, col3 = st.columns(3)
 
 error = ''
 
+map_si_no = {"NO": 0, "SI": 1}
+
 with col1:
-    td1 = st.selectbox("TD1", [0, 1])
-    patotiroide = st.selectbox("Pato Tiroide", [0,1])
-    deficitaccrescimento = st.selectbox("Deficit Accrescimento", [0, 1])
-    sintomigi = st.selectbox("Sintomi GI", [0, 1])
+    td1 = st.selectbox("TD1", ["NO", "SI"])
+    patotiroide = st.selectbox("Pato Tiroide", ["NO","SI"])
+    deficitaccrescimento = st.selectbox("Deficit Accrescimento", ["NO", "SI"])
+    sintomigi = st.selectbox("Sintomi GI", ["NO", "SI"])
     genere = st.selectbox("Genere", ["F", "M"])
 
 with col2:
-    familiaritaceliachia = st.selectbox("Familiarità Celiachia", [0, 1])
+    familiaritaceliachia = st.selectbox("Familiarità Celiachia", ["NO", "SI"])
     dq2 = st.selectbox("DQ2", [0, 1, 2])
-    dq5 = st.selectbox("DQ5", [0, 1])
-    dq8 = st.selectbox("DQ8", [0, 1])
+    dq5 = st.selectbox("DQ5", ["NO", "SI"])
+    dq8 = st.selectbox("DQ8", ["NO", "SI"])
 
 def is_all_zeros(record):
     columns_to_be_zero = ['TD1',
@@ -61,7 +63,7 @@ def adjust_prediction(rec, familiarita, prediction):
         prediction = prediction if prediction < 0.33 else 0.33
     if familiarita == 1:
         prediction += 0.03
-    return prediction
+    return min(prediction, 1.0)
 
 
 def create_label(prediction, error):
@@ -73,14 +75,14 @@ def create_label(prediction, error):
 
 if st.button("Predici"):
     record = pd.DataFrame([{
-        'TD1': td1,
-        'Pato Tiroide': patotiroide,
-        'Deficit \nAccrescimento': deficitaccrescimento,
-        'Sintomi GI': sintomigi,
+        'TD1': map_si_no[td1],
+        'Pato Tiroide': map_si_no[patotiroide],
+        'Deficit \nAccrescimento': map_si_no[deficitaccrescimento],
+        'Sintomi GI': map_si_no[sintomigi],
         'Familiarità\nCeliachia': 0,
         'DQ2': dq2,
-        'DQX.5': dq5,
-        'DQ8': dq8,
+        'DQX.5': map_si_no[dq5],
+        'DQ8': map_si_no[dq8],
         'Genere_F': 1 if genere == "F" else 0,
         'Genere_M': 1 if genere == "M" else 0
     }])
