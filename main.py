@@ -16,6 +16,7 @@ col1, col2, col3 = st.columns(3)
 error = ''
 
 map_si_no = {"NO": 0, "SI": 1}
+map_assente_presente = {"ASSENTE": 0, "PRESENTE": 1}
 
 with col1:
     td1 = st.selectbox("TD1", ["NO", "SI"])
@@ -26,9 +27,9 @@ with col1:
 
 with col2:
     familiaritaceliachia = st.selectbox("Familiarità Celiachia", ["NO", "SI"])
-    dq2 = st.selectbox("DQ2", [0, 1, 2])
-    dq5 = st.selectbox("DQ5", ["NO", "SI"])
-    dq8 = st.selectbox("DQ8", ["NO", "SI"])
+    dq2 = st.selectbox("DQ2", ["ASSENTE", 1, 2])
+    dq5 = st.selectbox("DQ5", ["ASSENTE", "PRESENTE"])
+    dq8 = st.selectbox("DQ8", ["ASSENTE", "PRESENTE"])
 
 def is_all_zeros(record):
     columns_to_be_zero = ['TD1',
@@ -80,9 +81,9 @@ if st.button("Predici"):
         'Deficit \nAccrescimento': map_si_no[deficitaccrescimento],
         'Sintomi GI': map_si_no[sintomigi],
         'Familiarità\nCeliachia': 0,
-        'DQ2': dq2,
-        'DQX.5': map_si_no[dq5],
-        'DQ8': map_si_no[dq8],
+        'DQ2': 0 if dq2 == "ASSENTE" else dq2,
+        'DQX.5': map_assente_presente[dq5],
+        'DQ8': map_assente_presente[dq8],
         'Genere_F': 1 if genere == "F" else 0,
         'Genere_M': 1 if genere == "M" else 0
     }])
