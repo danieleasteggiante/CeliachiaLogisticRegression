@@ -21,8 +21,7 @@ with col1:
     genere = st.selectbox("Genere", ["F", "M"])
 
 with col2:
-    familiaritaceliachia = st.selectbox("Familiarità Celiachia", [0, 1,2])
-    familiaritaceliachia = 0
+    familiaritaceliachia = st.selectbox("Familiarità Celiachia", [0, 1])
     dq2 = st.selectbox("DQ2", [0, 1, 2])
     dq5 = st.selectbox("DQ5", [0, 1, 2])
     dq8 = st.selectbox("DQ8", [0, 1])
