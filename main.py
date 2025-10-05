@@ -13,6 +13,8 @@ di Celiachia basandosi su vari fattori clinici e genetici.
 
 col1, col2, col3 = st.columns(3)
 
+error = ''
+
 with col1:
     td1 = st.selectbox("TD1", [0, 1])
     patotiroide = st.selectbox("Pato Tiroide", [0,1])
@@ -23,7 +25,7 @@ with col1:
 with col2:
     familiaritaceliachia = st.selectbox("Familiarità Celiachia", [0, 1])
     dq2 = st.selectbox("DQ2", [0, 1, 2])
-    dq5 = st.selectbox("DQ5", [0, 1, 2])
+    dq5 = st.selectbox("DQ5", [0, 1])
     dq8 = st.selectbox("DQ8", [0, 1])
 
 def is_all_zeros(record):
@@ -40,6 +42,15 @@ def is_all_zeros(record):
 def genetica_is_absent(record):
     return record['DQ2'].iloc[0] == 0 and record['DQX.5'].iloc[0] == 0 and record['DQ8'].iloc[0] == 0
 
+def genetica_is_not_possible(record):
+    return record['DQ2'].iloc[0] == 2 and  record['DQ8'].iloc[0] == 1
+
+def check_errors(record):
+    if genetica_is_not_possible(record):
+        return "Errore: Combinazione genetica non possibile."
+    return ''
+
+
 def adjust_prediction(rec, familiarita, prediction):
     print("adjust_prediction\n", rec, familiarita, prediction)
     if is_all_zeros(rec):
@@ -51,6 +62,13 @@ def adjust_prediction(rec, familiarita, prediction):
     if familiarita == 1:
         prediction += 0.03
     return prediction
+
+
+def create_label(prediction, error):
+    if error != '':
+        return error
+    risk =  "Basso rischio" if prediction < 0.4 else "Alto rischio"
+    return f"Predizione: {risk} di Celiachia"
 
 
 if st.button("Predici"):
@@ -68,9 +86,11 @@ if st.button("Predici"):
     }])
     pred = model.predict_proba(record)
     prediction_adjusted = adjust_prediction(record, familiaritaceliachia, pred[0][1])
-    label = "Basso rischio" if prediction_adjusted < 0.4 else "Alto rischio"
-    st.header(f"Predizione: {label} di Celiachia")
+    errors = check_errors(record)
+    label = create_label(prediction_adjusted, errors)
+    st.header(label)
     with col3:
-        fig = px.bar(x=["Celiachia", "Non Celiachia"], y=[prediction_adjusted, 1-prediction_adjusted],
-                     labels={'x': 'Classe', 'y': 'Probabilità'})
-        st.plotly_chart(fig)
+        if errors == '':
+            fig = px.bar(x=["Celiachia", "Non Celiachia"], y=[prediction_adjusted, 1-prediction_adjusted],
+                         labels={'x': 'Classe', 'y': 'Probabilità'})
+            st.plotly_chart(fig)
