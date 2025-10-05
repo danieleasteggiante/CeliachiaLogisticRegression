@@ -37,14 +37,20 @@ def is_all_zeros(record):
     'DQ8',]
     return all(record[col].iloc[0] == 0 for col in columns_to_be_zero)
 
-def familiarita_is_present(rec):
-    return rec['Familiarità\nCeliachia'].iloc[0] > 0
+def genetica_is_absent(record):
+    return record['DQ2'].iloc[0] == 0 and record['DQX.5'].iloc[0] == 0 and record['DQ8'].iloc[0] == 0
 
-
-def adjust_prediction(rec, pred):
+def adjust_prediction(rec, familiarita, prediction):
+    print("adjust_prediction\n", rec, familiarita, prediction)
     if is_all_zeros(rec):
-        return 0.01
-    return pred
+        prediction = 0.1
+    if is_all_zeros(rec):
+        prediction =  0.01
+    if genetica_is_absent(rec):
+        prediction = prediction if prediction < 0.33 else 0.33
+    if familiarita == 1:
+        prediction += 0.03
+    return prediction
 
 
 if st.button("Predici"):
@@ -53,7 +59,7 @@ if st.button("Predici"):
         'Pato Tiroide': patotiroide,
         'Deficit \nAccrescimento': deficitaccrescimento,
         'Sintomi GI': sintomigi,
-        'Familiarità\nCeliachia': familiaritaceliachia,
+        'Familiarità\nCeliachia': 0,
         'DQ2': dq2,
         'DQX.5': dq5,
         'DQ8': dq8,
@@ -61,10 +67,10 @@ if st.button("Predici"):
         'Genere_M': 1 if genere == "M" else 0
     }])
     pred = model.predict_proba(record)
-    prediction_adjusted = adjust_prediction(record, pred[0][1])
-    label = "Basso rischio" if prediction_adjusted < 0.3 else "Alto rischio"
+    prediction_adjusted = adjust_prediction(record, familiaritaceliachia, pred[0][1])
+    label = "Basso rischio" if prediction_adjusted < 0.4 else "Alto rischio"
     st.header(f"Predizione: {label} di Celiachia")
     with col3:
-        fig = px.bar(x=["Celiachia", "Non Celiachia"], y=[pred[0][1], pred[0][0]],
+        fig = px.bar(x=["Celiachia", "Non Celiachia"], y=[prediction_adjusted, 1-prediction_adjusted],
                      labels={'x': 'Classe', 'y': 'Probabilità'})
         st.plotly_chart(fig)
