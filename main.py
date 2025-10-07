@@ -70,8 +70,9 @@ def adjust_prediction(rec, familiarita, prediction):
 def create_label(prediction, error):
     if error != '':
         return error
-    risk =  "Basso rischio" if prediction < 0.4 else "Alto rischio"
-    return f"Predizione: {risk} di Celiachia"
+    #risk =  "Basso rischio" if prediction < 0.4 else "Alto rischio"
+    #return f"Predizione: {risk} di Celiachia"
+    return f"Predizione: {prediction:.0%}"
 
 
 if st.button("Predici"):
